@@ -263,17 +263,18 @@ def sim_kirkwood_obs(date = str(date.today()), start_time = str(datetime.datetim
 
 
     # user input for which object IDs they want to observe
-    print("Please enter the IDs of the objects you would like to observe, separated by commas.")
+    print("Please enter the IDs of the objects you would like to observe, separated by commas. Hit ENTER to observe all listed objects.")
 
-    while True:
-        ids = input()
-        if ids != "":
-            break
-        else:
-            print("Please enter the IDs of the objects you would like to observe, separated by commas.",end = '\n')
+    ids = input()
+
+    print("Generating files...")
+
+    if ids == "":
+        ids = list(range(1, len(target_df) + 1))
+    else:
+        ids = ids.split(","); ids = [int(i) for i in ids]
     
     # limit info and schedule dataframes only to selected objects
-    ids = ids.split(",");ids = [int(i) for i in ids]
     selected_target_df = target_df.loc[target_df['ID'].isin(ids)]
     selected_names = list(selected_target_df.index) # names of selected objects
     selected_time_df = time_df.loc[time_df['ID'].isin(ids)]
@@ -288,7 +289,7 @@ def sim_kirkwood_obs(date = str(date.today()), start_time = str(datetime.datetim
     # create directories for output files
     dir = "output"
     os.makedirs(dir, exist_ok=True)
-    subdir = dir + "/" + str(datetime.datetime.now()).split(" ")[0].replace("-", "_") + "_" + str(datetime.datetime.now()).split(" ")[1][:8].replace(":", ".")
+    subdir = dir + "/" + str(datetime.datetime.now()).split(" ")[0] + "_" + str(datetime.datetime.now()).split(" ")[1][:8].replace(":", ".")
     os.makedirs(subdir, exist_ok = True)
 
     # loop over targets and calcluate alt and az for each time interval during the night
@@ -352,6 +353,8 @@ message_list = ["Which date would you like to observe on? (Enter as YYYY-MM-DD, 
                 "How often do you want to re-check for observability (in hours)? (type value if desired, otherwise hit ENTER. Default is 0.5, which creates a schedule in 30 minute intervals.)"]
                 
 # print interactive prompts in terminal
+print()
+print("------------------------------------------------------------------------")
 print("KIRKWOOD OBSERVING PLANNER")
 print("CREATED BY: ARMAAN GOYAL, BRANDON RADZOM, JESSICA RANSHAW, XIAN-YU WANG")
 print("LAST UPDATED ON 2023-07-14")
